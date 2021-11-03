@@ -23,8 +23,8 @@ binop (\+|\-|\*|\/)
 %%
  /* Rules section*/
 {whitespace}                                ;
-{savedWord}                                 handleSavedWords();
-{savedOperator}                             handleSavedOperator();
+{savedWord}                                 return handleSavedWords();
+{savedOperator}                             return handleSavedOperator();
 {relop}                                     return RELOP;
 {binop}                                     return BINOP;
 

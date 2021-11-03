@@ -22,6 +22,7 @@ binop (\+|\-|\*|\/)
 
 %%
  /* Rules section*/
+
 {whitespace}                                ;
 {savedWord}                                 return handleSavedWords();
 {savedOperator}                             return handleSavedOperator();
@@ -32,16 +33,16 @@ binop (\+|\-|\*|\/)
                                             BEGIN(comment);
                                             return COMMENT;
                                             }
-<comment>[^\n]                              ; /* TODO: Do we need to add \r*/
-<comment>\n                                 BEGIN(INITIAL);
+<comment>[^\n\r]                            ; /* swallow rest of the line. */
+<comment>[\n\r]                             BEGIN(INITIAL);
 \"                                          BEGIN(string);
-<string>(\\\"|[(\x20-\x21\x23-\x7E)])*\"     {
+<string>(\\\"|[(\x20-\x21\x23-\x7E)])*\"    {
                                             BEGIN(INITIAL);
                                             return(STRING);
                                             }
 {letter}+({digit}|{letter})*                return ID;
 {positiveDigit}{digit}*                     return NUM;
-
+.                                           ;  /* TODO: maybe return error?  */
 
 %%
  /* Code section*/

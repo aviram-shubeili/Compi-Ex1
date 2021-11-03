@@ -13,6 +13,12 @@ letter          ([a-zA-Z])
 whitespace      ([\t\n\r ])
 printable       ([\x20-\x7Ewhitespace])
 escapeSequence  ((\[\"nrt0]) | (\xdigitdigit))
+saveWord (void | int | byte | digit+b | bool | and | or |
+            not | true | false | return | if | else | while |
+            break | continue |)
+saveOperator ( \; | \, | \( | \) | \{ | \} | \= )
+relop ( \== | \!= | \< | \> | \<= | \>= )
+binop ( \+ | \- | \* | \/)
 
 %%
  /* Rules section*/

@@ -57,7 +57,7 @@ if [[ $? != 0 ]]
 		echo "Cannot build submission!"
 		exit
 fi
-if [ ! -f part_a.out ]
+if [ ! -f hw1.out ]
 	then
 		echo "Cannot build submission!"
 		exit
@@ -80,12 +80,12 @@ fi
 #	number of tests:
 numtests=2
 #	command to execute test:
-command="./hw1.out < ta\$i.in >& ta\$i.res"
+command="./hw1.out < t\$i.in >& t\$i.res"
 i="1"
 while [ $i -le $numtests ]
 	do
 		eval $command
-		diff ta$i.res ta$i.out &> /dev/null
+		diff t$i.res t$i.out &> /dev/null
 		if [[ $? != 0 ]] 
 			then
 				echo "Failed test #"$i"!"

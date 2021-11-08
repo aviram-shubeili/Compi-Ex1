@@ -42,21 +42,28 @@ void handleString() {
         if (yytext[i] != '\\') {
             result += yytext[i];
         }
-        else // i < yyleng - 2 because of the corner case taken care of at the start.
+        else // start of escape sequence
         {
             switch (yytext[i+1]) {
                 case '\\':
+                    result += '\\';
                     break;
                 case '"':
+                    result += '\"';
                     break;
                 case 'n':
+                    result += '\n';
                 case 'r':
+                    result += '\r';
                     break;
                 case 't':
+                    result += '\t';
                     break;
                 case '0':
+                    result += '\0';
                     break;
                 case 'x':
+                    handleAsciiChar(yytext+i+1);
                     break;
                 default:
                     // TODO: error!!!

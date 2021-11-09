@@ -3,29 +3,67 @@
 #include <cstring>
 #include <vector>
 #include <cassert>
+#include <sstream>
+
 using namespace std;
+std::vector<std::string> InitTokenNames();
 
 static vector<string> tokenNames;
-vector<string> InitTokenNames();
 
 void printToken(int token);
 
 void handleString();
+
+string handleAsciiChar(char *escape_seq);
+
+bool isError(int token);
+
+void handleError(int token, char *cause_of_error);
 
 int main()
 {
     tokenNames = InitTokenNames();
     int token;
     while(token = yylex()) {
+        if(isError(token)) {
+            handleError(token, yytext);
+        }
         printToken(token);
     }
     return 0;
 }
 
+
+bool isError(int token) {
+    return token >= ERROR_UNCLOSED_STRING;
+}
+
+void handleError(int token, char *cause_of_error) {
+    // TODO
+    switch (token) {
+        case ERROR_INVALID_CHAR:
+            //TODO
+            break;
+        case ERROR_UNCLOSED_STRING:
+            //TODO
+            break;
+        case ERROR_UNIDENTIFIED_ESCAPE_SEQUENCE:
+            //TODO
+            break;
+        case ERROR_INVALID_ASCII_ESCAPE_SEQUENCE:
+            //TODO
+            break;
+        default:
+            //should never get here.
+            assert(false);
+            break;
+    }
+    exit(0);
+}
+
 void printToken(int token) {
     if(token == STRING) {
-        cout << yylineno << " " << tokenNames[token] << " " << yytext << endl;
-//        handleString();
+        handleString();
         return;
     }
     else {
@@ -34,8 +72,9 @@ void printToken(int token) {
 }
 
 void handleString() {
+        // TODO: if the string is for example: "hello \\" then it should be fine but this will throw an error - fix this.
     if(yyleng >= 2 and yytext[yyleng-2] == '\\') {
-        // TODO: special case string ends with '\' :: handle error
+        handleError(ERROR_UNCLOSED_STRING, yytext);
     }
     string result;
     for (int i = 0; i <= yyleng - 2 /* last char is always the closing " */; ++i) {
@@ -63,47 +102,32 @@ void handleString() {
                     result += '\0';
                     break;
                 case 'x':
-                    handleAsciiChar(yytext+i+1);
+                    result += handleAsciiChar(yytext+i+1);
                     break;
                 default:
-                    // TODO: error!!!
+                    handleError(ERROR_UNIDENTIFIED_ESCAPE_SEQUENCE, yytext + i + 1);
                     break;
             }
         }
     }
 }
-vector<string> InitTokenNames() {
-    vector<string> result = vector<string>(30);
-    result[VOID] = "VOID";
-    result[INT] = "INT";
-    result[BYTE] = "BYTE";
-    result[B] = "B";
-    result[BOOL] = "BOOL";
-    result[AND] = "AND";
-    result[OR] = "OR";
-    result[NOT] = "NOT";
-    result[TRUE] = "TRUE";
-    result[FALSE] = "FALSE";
-    result[RETURN] = "RETURN";
-    result[IF] = "IF";
-    result[ELSE] = "ELSE";
-    result[WHILE] = "WHILE";
-    result[BREAK] = "BREAK";
-    result[CONTINUE] = "CONTINUE";
-    result[SC] = "SC";
-    result[COMMA] = "COMMA";
-    result[LPAREN] = "LPAREN";
-    result[RPAREN] = "RPAREN";
-    result[LBRACE] = "LBRACE";
-    result[RBRACE] = "RBRACE";
-    result[ASSIGN] = "ASSIGN";
-    result[RELOP] = "RELOP";
-    result[BINOP] = "BINOP";
-    result[COMMENT] = "COMMENT";
-    result[ID] = "ID";
-    result[NUM] = "NUM";
-    result[STRING] = "STRING";
+
+string handleAsciiChar(char *ascii_chars) {
+    /* right now we are dealing with invalid ascii sequence in the REGEX,
+        i leave the handling in this function so if we will want to deal with invalid here
+        it will be easier.
+     */
+
+    int ascii_value;
+    char ascii_char[2];
+    ascii_char[0] = ascii_chars[0];
+    ascii_char[1] = ascii_chars[1];
+    // this turn string of hex number to string of ascii representation.
+    std::istringstream(ascii_char) >> std::hex >> ascii_value;
+    string result;
+    result += ((char)ascii_value);
     return result;
+
 }
 
 
@@ -137,4 +161,38 @@ int handleSavedOperator() {
     if(strcmp("=",yytext)== 0) return ASSIGN;
     // should never get here.
     assert(false);
+}
+
+std::vector<std::string> InitTokenNames() {
+    std::vector<std::string> result = std::vector<std::string>(30);
+    result[VOID] = "VOID";
+    result[INT] = "INT";
+    result[BYTE] = "BYTE";
+    result[B] = "B";
+    result[BOOL] = "BOOL";
+    result[AND] = "AND";
+    result[OR] = "OR";
+    result[NOT] = "NOT";
+    result[TRUE] = "TRUE";
+    result[FALSE] = "FALSE";
+    result[RETURN] = "RETURN";
+    result[IF] = "IF";
+    result[ELSE] = "ELSE";
+    result[WHILE] = "WHILE";
+    result[BREAK] = "BREAK";
+    result[CONTINUE] = "CONTINUE";
+    result[SC] = "SC";
+    result[COMMA] = "COMMA";
+    result[LPAREN] = "LPAREN";
+    result[RPAREN] = "RPAREN";
+    result[LBRACE] = "LBRACE";
+    result[RBRACE] = "RBRACE";
+    result[ASSIGN] = "ASSIGN";
+    result[RELOP] = "RELOP";
+    result[BINOP] = "BINOP";
+    result[COMMENT] = "COMMENT";
+    result[ID] = "ID";
+    result[NUM] = "NUM";
+    result[STRING] = "STRING";
+    return result;
 }

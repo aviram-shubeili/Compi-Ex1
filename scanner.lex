@@ -11,6 +11,7 @@ int handleSavedOperator();
 
 positiveDigit   ([1-9])
 digit           ([0-9])
+hexdigit        ([0-9A-F])
 letter          ([a-zA-Z])
 whitespace      ([\t\n\r ])
 printable       ([\x20-\x7E]|whitespace)
@@ -19,6 +20,7 @@ savedWord (void|int|byte|digit+b|bool|and|or|not|true|false|return|if|else|while
 savedOperator (;|,|\(|\)|\{|\}|=)
 relop (==|!=|<|>|<=|>=)
 binop (\+|\-|\*|\/)
+
 
 %%
  /* Rules section*/
@@ -36,13 +38,18 @@ binop (\+|\-|\*|\/)
 <comment>[^\n\r]                            ; /* swallow rest of the line. */
 <comment>[\n\r]                             BEGIN(INITIAL);
 \"                                          BEGIN(string);
+
+<string>[\n\r]                              return ERROR_UNCLOSED_STRING;
+
+<string>\\x{hexdigit}[^{hexdigit}\n\r]       return ERROR_INVALID_ASCII_ESCAPE_SEQUENCE; /* TODO: what to do with this: "hello \xSS (invalid hex AND unclosed string)  */
+<string>\\x[^{hexdigit}\n\r]                 return ERROR_INVALID_ASCII_ESCAPE_SEQUENCE;
 <string>(\\\"|[(\x20-\x21\x23-\x7E)])*\"    {
                                             BEGIN(INITIAL);
-                                            return(STRING);
+                                            return STRING;
                                             }
 {letter}+({digit}|{letter})*                return ID;
-{positiveDigit}{digit}*                     return NUM;
-.                                           ;  /* TODO: maybe return error?  */
+{positiveDigit}{digit}*|0                   return NUM;
+.                                           return ERROR_INVALID_CHAR;
 
 %%
  /* Code section*/

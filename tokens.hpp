@@ -1,7 +1,9 @@
 #ifndef TOKENS_HPP_
 #define TOKENS_HPP_
 #include <cstdlib>
-  enum tokentype
+#include <vector>
+#include <string>
+enum tokentype
   {
     VOID = 1,
     INT = 2,
@@ -31,10 +33,15 @@
     COMMENT = 26,
     ID = 27,
     NUM = 28,
-    STRING = 29
+    STRING = 29,
+    ERROR_UNCLOSED_STRING = 30,
+    ERROR_INVALID_CHAR = 31,
+    ERROR_UNIDENTIFIED_ESCAPE_SEQUENCE = 32,
+    ERROR_INVALID_ASCII_ESCAPE_SEQUENCE = 33
   };
   extern int yylineno;
   extern char* yytext;
   extern int yyleng;
   extern int yylex();
+
 #endif /* TOKENS_HPP_ */

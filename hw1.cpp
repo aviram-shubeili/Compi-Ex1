@@ -7,20 +7,12 @@
 
 using namespace std;
 std::vector<std::string> InitTokenNames();
-
 static vector<string> tokenNames;
-
 void printToken(int token);
-
 void handleString();
-
 string handleAsciiChar(char *escape_seq);
-
 bool isError(int token);
-
 void handleError(int token, char *cause_of_error);
-
-bool stringEndsWithBackSlash(int yyleng, char *yytext);
 
 int main()
 {
@@ -43,7 +35,7 @@ bool isError(int token) {
 void handleError(int token, char *cause_of_error) {
     switch (token) {
         case ERROR_INVALID_CHAR:
-            cout << "Error" << cause_of_error[0] << "\n";
+            cout << "Error " << cause_of_error[0] << "\n";
             break;
         case ERROR_UNCLOSED_STRING:
             cout << "Error unclosed string\n";
@@ -116,6 +108,7 @@ void handleString() {
             i++;
         }
     }
+    cout << yylineno << " STRING " << result << "\n";
 }
 
 

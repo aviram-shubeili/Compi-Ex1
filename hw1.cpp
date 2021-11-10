@@ -14,6 +14,8 @@ string handleAsciiChar(char *escape_seq);
 bool isError(int token);
 void handleError(int token, char *cause_of_error);
 
+bool asciiValid(char i, char i1);
+
 int main()
 {
     tokenNames = InitTokenNames();
@@ -44,9 +46,13 @@ void handleError(int token, char *cause_of_error) {
             cout << "Error undefined escape sequence " << cause_of_error[0] << "\n";
             break;
         case ERROR_INVALID_ASCII_ESCAPE_SEQUENCE:
-            cout << "Error undefined escape sequence " << cause_of_error[1] << cause_of_error[2];
-            if(yyleng >= 4) {
-                cout << cause_of_error[3];
+            cout << "Error undefined escape sequence " << cause_of_error[1];
+            if (cause_of_error[2] != '\"')
+            {
+                cout << cause_of_error[2];
+                if(yyleng >= 4 && cause_of_error[3] != '\"') {
+                    cout << cause_of_error[3];
+                }
             }
             cout << "\n";
             break;
@@ -113,7 +119,6 @@ void handleString() {
     cout << yylineno << " STRING " << result << "\n";
 }
 
-
 string handleAsciiChar(char *ascii_chars) {
     /* right now we are dealing with invalid ascii sequence in the REGEX,
         i leave the handling in this function so if we will want to deal with invalid here
@@ -125,15 +130,19 @@ string handleAsciiChar(char *ascii_chars) {
     ascii_char[0] = ascii_chars[0];
     ascii_char[1] = ascii_chars[1];
     // this turn string of hex number to string of ascii representation.
-    std::istringstream(ascii_char) >> std::hex >> ascii_value;
-    if(ascii_value > 0x7f or
-       (ascii_value == 0 and (ascii_char[0] != '0' or ascii_char[1] != '0'))) {
+    if (not asciiValid(ascii_char[0],ascii_char[1]))
+    {
         handleError(ERROR_INVALID_ASCII_ESCAPE_SEQUENCE, ascii_chars - 2);
     }
+    std::istringstream(ascii_char) >> std::hex >> ascii_value;
     string result;
     result += ((char)ascii_value);
     return result;
 
+}
+
+bool asciiValid(char c1, char c2) {
+    return (c1 >= '0' and c1 <= '7') and ((c2 >= '0' and c2 <= '9') or (c2 >= 'A' and c2 <= 'F'));
 }
 
 

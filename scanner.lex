@@ -40,9 +40,8 @@ binop (\+|\-|\*|\/)
 \"                                          BEGIN(string);
 
 <string>[\n\r]                              return ERROR_UNCLOSED_STRING;
-
-<string>\\x{hexdigit}[^{hexdigit}\n\r]       return ERROR_INVALID_ASCII_ESCAPE_SEQUENCE; /* TODO: what to do with this: "hello \xSS (invalid hex AND unclosed string)  */
-<string>\\x[^{hexdigit}\n\r]                 return ERROR_INVALID_ASCII_ESCAPE_SEQUENCE;
+<string>\\x{hexdigit}[^0-9A-F]       return ERROR_INVALID_ASCII_ESCAPE_SEQUENCE; /* TODO: what to do with this: "hello \xSS (invalid hex AND unclosed string)  */
+<string>\\x[^0-9A-F]                 return ERROR_INVALID_ASCII_ESCAPE_SEQUENCE;
 <string>(\\\"|[(\x20-\x21\x23-\x7E)])*\"    {
                                             BEGIN(INITIAL);
                                             return STRING;

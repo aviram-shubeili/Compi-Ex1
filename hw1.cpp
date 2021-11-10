@@ -20,6 +20,8 @@ bool isError(int token);
 
 void handleError(int token, char *cause_of_error);
 
+bool stringEndsWithBackSlash(int yyleng, char *yytext);
+
 int main()
 {
     tokenNames = InitTokenNames();
@@ -39,19 +41,22 @@ bool isError(int token) {
 }
 
 void handleError(int token, char *cause_of_error) {
-    // TODO
     switch (token) {
         case ERROR_INVALID_CHAR:
-            //TODO
+            cout << "Error" << cause_of_error[0] << "\n";
             break;
         case ERROR_UNCLOSED_STRING:
-            //TODO
+            cout << "Error unclosed string\n";
             break;
         case ERROR_UNIDENTIFIED_ESCAPE_SEQUENCE:
-            //TODO
+            cout << "Error undefined escape sequence" << cause_of_error[0] << "\n";
             break;
         case ERROR_INVALID_ASCII_ESCAPE_SEQUENCE:
-            //TODO
+            cout << "Error undefined escape sequence " << cause_of_error[1] << cause_of_error[2];
+            if(yyleng == 4) {
+                cout << cause_of_error[3];
+            }
+            cout << "\n";
             break;
         default:
             //should never get here.
@@ -71,15 +76,15 @@ void printToken(int token) {
     }
 }
 
+
 void handleString() {
-        // TODO: if the string is for example: "hello \\" then it should be fine but this will throw an error - fix this.
-    if(yyleng >= 2 and yytext[yyleng-2] == '\\') {
-        handleError(ERROR_UNCLOSED_STRING, yytext);
-    }
     string result;
     for (int i = 0; i <= yyleng - 2 /* last char is always the closing " */; ++i) {
         if (yytext[i] != '\\') {
             result += yytext[i];
+        }
+        else if(i == yyleng - 2){
+            handleError(ERROR_UNCLOSED_STRING, yytext);
         }
         else // start of escape sequence
         {
@@ -108,9 +113,11 @@ void handleString() {
                     handleError(ERROR_UNIDENTIFIED_ESCAPE_SEQUENCE, yytext + i + 1);
                     break;
             }
+            i++;
         }
     }
 }
+
 
 string handleAsciiChar(char *ascii_chars) {
     /* right now we are dealing with invalid ascii sequence in the REGEX,

@@ -41,7 +41,7 @@ void handleError(int token, char *cause_of_error) {
             cout << "Error unclosed string\n";
             break;
         case ERROR_UNIDENTIFIED_ESCAPE_SEQUENCE:
-            cout << "Error undefined escape sequence" << cause_of_error[0] << "\n";
+            cout << "Error undefined escape sequence " << cause_of_error[0] << "\n";
             break;
         case ERROR_INVALID_ASCII_ESCAPE_SEQUENCE:
             cout << "Error undefined escape sequence " << cause_of_error[1] << cause_of_error[2];

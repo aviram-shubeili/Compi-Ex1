@@ -45,7 +45,7 @@ void handleError(int token, char *cause_of_error) {
             break;
         case ERROR_INVALID_ASCII_ESCAPE_SEQUENCE:
             cout << "Error undefined escape sequence " << cause_of_error[1] << cause_of_error[2];
-            if(yyleng == 4) {
+            if(yyleng >= 4) {
                 cout << cause_of_error[3];
             }
             cout << "\n";
@@ -99,7 +99,8 @@ void handleString() {
                     result += '\0';
                     break;
                 case 'x':
-                    result += handleAsciiChar(yytext+i+1);
+                    result += handleAsciiChar(yytext+i+2);
+                    i+=2;
                     break;
                 default:
                     handleError(ERROR_UNIDENTIFIED_ESCAPE_SEQUENCE, yytext + i + 1);
@@ -124,6 +125,10 @@ string handleAsciiChar(char *ascii_chars) {
     ascii_char[1] = ascii_chars[1];
     // this turn string of hex number to string of ascii representation.
     std::istringstream(ascii_char) >> std::hex >> ascii_value;
+    if(ascii_value > 0x7f or
+       (ascii_value == 0 and (ascii_char[0] != '0' or ascii_char[1] != '0'))) {
+        handleError(ERROR_INVALID_ASCII_ESCAPE_SEQUENCE, ascii_chars - 2);
+    }
     string result;
     result += ((char)ascii_value);
     return result;

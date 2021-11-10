@@ -89,6 +89,7 @@ void handleString() {
                     break;
                 case 'n':
                     result += '\n';
+                    break;
                 case 'r':
                     result += '\r';
                     break;

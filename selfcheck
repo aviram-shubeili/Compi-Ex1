@@ -45,7 +45,7 @@ if [ ! -f scanner.lex ]
 		exit
 fi
 
-flex scanner.lex &> /dev/null
+flex scannerBKUP.lex &> /dev/null
 if [[ $? != 0 ]] 
 	then
 		echo "Cannot build submission!"

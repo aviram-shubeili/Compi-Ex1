@@ -120,10 +120,6 @@ void handleString() {
 }
 
 string handleAsciiChar(char *ascii_chars) {
-    /* right now we are dealing with invalid ascii sequence in the REGEX,
-        i leave the handling in this function so if we will want to deal with invalid here
-        it will be easier.
-     */
 
     int ascii_value;
     char ascii_char[2];
@@ -150,7 +146,7 @@ int handleSavedWords() {
     if (strcmp(yytext,"void") == 0)     return VOID;
     if (strcmp(yytext,"int") == 0)      return INT;
     if (strcmp(yytext,"byte") == 0)     return BYTE;
-    if (strcmp(yytext,"b") == 0)     return B;
+    if (strcmp(yytext,"b") == 0)        return B;
     if (strcmp(yytext,"bool") == 0)     return BOOL;
     if (strcmp(yytext,"and") == 0)      return AND;
     if (strcmp(yytext,"or") == 0)       return OR;
